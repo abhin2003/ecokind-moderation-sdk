@@ -1,5 +1,7 @@
 # EcoKind Moderation SDK
 
+https://www.npmjs.com/package/ecokind-moderation-sdk
+
 EcoKind is a privacy-first content moderation SDK powered by decentralized LLMs on the Internet Computer. This package enables real-time toxic message detection with built-in AI tools, ensuring safer communication across digital platforms.
 
 > ⚠️ **Note:** Only **authorized users** with a valid project key can access and utilize the SDK's moderation features.
