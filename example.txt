@@ -1,0 +1,188 @@
+const ICMessagingClient = require('../echo-client/index.js');
+
+async function runExample() {
+  console.log('🚀 Starting IC Messaging Client Example\n');
+  
+  // Initialize the client
+  const client = new ICMessagingClient();
+  
+  try {
+    // Step 1: Initialize connection to the canister
+    console.log('📡 Initializing connection to IC canister...');
+    await client.initialize();
+    console.log('✅ Connected successfully!\n');
+
+    // Step 2: Authorize with project key
+    console.log('🔐 Authorizing with project credentials...');
+    const authorized = await client.authorize('machu', 'machu-1750486429293560682');
+    
+    if (!authorized) {
+      console.log('❌ Authorization failed! Cannot proceed with other operations.');
+      return;
+    }
+    console.log('✅ Authorization successful!\n');
+
+    // Step 3: Now we can use all protected functions
+    // Example 1: Send a message
+    console.log('📤 Sending a message...');
+    const messageSuccess = await client.sendMessage(
+      'elsnu-exgt6-a6c4w-zvlfc-3oqrj-5ifj3-adiil-cagsu-sdtml-yeed7-mae',
+      'xraya-wv56e-7ddrm-fwhih-wx6er-3tiru-agv3f-efbkp-uwqbn-od643-rae',
+      'Hello! How are you doing today?'
+    );
+    console.log(`Message sent: ${messageSuccess ? '✅ Success' : '❌ Failed'}\n`);
+
+    // Example 2: Try to send a potentially harmful message
+    console.log('🚫 Testing harassment detection...');
+    const harassmentMessage = await client.sendMessage(
+      'elsnu-exgt6-a6c4w-zvlfc-3oqrj-5ifj3-adiil-cagsu-sdtml-yeed7-mae',
+      'xraya-wv56e-7ddrm-fwhih-wx6er-3tiru-agv3f-efbkp-uwqbn-od643-rae',
+      'You are terrible and I hate you!'
+    );
+    console.log(`Harassment message blocked: ${!harassmentMessage ? '✅ Blocked' : '❌ Not blocked'}\n`);
+
+    // Example 2: Try to send a  message
+    console.log('🚫 Testing harassment detection...');
+    const harassmentMessages = await client.sendMessage(
+      'elsnu-exgt6-a6c4w-zvlfc-3oqrj-5ifj3-adiil-cagsu-sdtml-yeed7-mae',
+      'xraya-wv56e-7ddrm-fwhih-wx6er-3tiru-agv3f-efbkp-uwqbn-od643-rae',
+      'You are beautiful!'
+    );
+    console.log(`Harassment message blocked: ${!harassmentMessages ? '✅ Blocked' : '❌ Not blocked'}\n`);
+
+    // Example 3: Check harassment level
+    console.log('🔍 Checking harassment level of a message...');
+    const level = await client.harassmentLevel('This is a normal friendly message');
+    console.log(`Harassment level: ${level}\n`);
+
+    // Example 4: Get message improvement suggestion
+    console.log('💡 Getting message improvement suggestion...');
+    const improved = await client.suggestImprovedMessage('ur message was bad and dumb');
+    console.log(`Original: "ur message was bad and dumb"`);
+    console.log(`Improved: "${improved}"\n`);
+
+    // Example 5: Receive messages
+    console.log('📥 Receiving messages for receiver...');
+    const messages = await client.receiveMessages('xraya-wv56e-7ddrm-fwhih-wx6er-3tiru-agv3f-efbkp-uwqbn-od643-rae');
+    console.log(`Found ${messages.length} messages:`);
+    messages.forEach((msg, index) => {
+      const date = new Date(msg.timestamp / 1000000); // Convert nanoseconds to milliseconds
+      console.log(`  ${index + 1}. From: ${msg.sender.substring(0, 10)}... | "${msg.content}" | ${date.toLocaleString()}`);
+    });
+    console.log('');
+
+    // Example 6: Validate different keys (this doesn't require authorization)
+    console.log('🔑 Testing key validation...');
+    const validKey = await client.validateKey('machu', 'machu-1750486429293560682');
+    const invalidKey = await client.validateKey('machu', 'wrongproject-abc123');
+    console.log(`Valid key (machu-1750486429293560682): ${validKey ? '✅ Valid' : '❌ Invalid'}`);
+    console.log(`Invalid key (wrongproject-abc123): ${invalidKey ? '✅ Valid' : '❌ Invalid'}\n`);
+
+    // Example 7: Edit a message (if we have any)
+    if (messages.length > 0) {
+      console.log('✏️ Editing the first message...');
+      const editSuccess = await client.editMessage(
+        'elsnu-exgt6-a6c4w-zvlfc-3oqrj-5ifj3-adiil-cagsu-sdtml-yeed7-mae', // sender address
+        0, // index of first message
+        'Hello! How are you doing today? Hope you have a wonderful day!'
+      );
+      console.log(`Message edited: ${editSuccess ? '✅ Success' : '❌ Failed'}\n`);
+    }
+
+    // Example 8: Check messages again after edit
+    console.log('📥 Checking messages after edit...');
+    const updatedMessages = await client.receiveMessages('xraya-wv56e-7ddrm-fwhih-wx6er-3tiru-agv3f-efbkp-uwqbn-od643-rae');
+    console.log(`Updated messages count: ${updatedMessages.length}`);
+    updatedMessages.forEach((msg, index) => {
+      const date = new Date(msg.timestamp / 1000000);
+      console.log(`  ${index + 1}. From: ${msg.sender.substring(0, 10)}... | "${msg.content}" | ${date.toLocaleString()}`);
+    });
+
+    console.log('\n🎉 Example completed successfully!');
+
+  } catch (error) {
+    console.error('❌ Error running example:', error);
+    
+    // Additional error information
+    if (error.message.includes('Not authorized')) {
+      console.log('💡 Tip: Make sure to call authorize() with valid project name and key');
+    } else if (error.message.includes('not initialized')) {
+      console.log('💡 Tip: Make sure the canister is deployed and accessible');
+    } else if (error.message.includes('network')) {
+      console.log('💡 Tip: Check your internet connection and IC network status');
+    }
+  }
+}
+
+// Helper function to demonstrate different usage patterns
+async function demonstrateUsagePatterns() {
+  console.log('\n📚 Demonstrating different usage patterns...\n');
+  
+  const client = new ICMessagingClient();
+  await client.initialize();
+  
+  // Must authorize first
+  const authorized = await client.authorize('machu', 'machu-1750486429293560682');
+  if (!authorized) {
+    console.log('❌ Cannot demonstrate patterns without proper authorization');
+    return;
+  }
+
+  // Pattern 1: Batch messaging
+  console.log('📦 Batch messaging pattern:');
+  const users = [
+    'xraya-wv56e-7ddrm-fwhih-wx6er-3tiru-agv3f-efbkp-uwqbn-od643-rae',
+    'elsnu-exgt6-a6c4w-zvlfc-3oqrj-5ifj3-adiil-cagsu-sdtml-yeed7-mae'
+  ];
+  const message = 'Hello everyone! This is a broadcast message.';
+  
+  for (const user of users) {
+    try {
+      await client.sendMessage('system', user, message);
+      console.log(`  ✅ Message sent to ${user.substring(0, 10)}...`);
+    } catch (error) {
+      console.log(`  ❌ Failed to send to ${user.substring(0, 10)}...: ${error.message}`);
+    }
+  }
+
+  // Pattern 2: Message moderation workflow
+  console.log('\n🛡️ Message moderation workflow:');
+  const testMessage = 'This message might be problematic';
+  
+  const harassmentLevel = await client.harassmentLevel(testMessage);
+  console.log(`  Harassment level: ${harassmentLevel}`);
+  
+  if (harassmentLevel === 'High') {
+    console.log('  🚫 Message blocked due to high harassment level');
+  } else if (harassmentLevel === 'Moderate') {
+    const improved = await client.suggestImprovedMessage(testMessage);
+    console.log(`  💡 Suggested improvement: "${improved}"`);
+  } else {
+    const sent = await client.sendMessage(
+      'elsnu-exgt6-a6c4w-zvlfc-3oqrj-5ifj3-adiil-cagsu-sdtml-yeed7-mae', 
+      'xraya-wv56e-7ddrm-fwhih-wx6er-3tiru-agv3f-efbkp-uwqbn-od643-rae', 
+      testMessage
+    );
+    console.log(`  ✅ Message sent: ${sent}`);
+  }
+
+  // Pattern 3: Authorization error handling
+  console.log('\n🔒 Demonstrating authorization requirement:');
+  const unauthorizedClient = new ICMessagingClient();
+  await unauthorizedClient.initialize();
+  
+  try {
+    await unauthorizedClient.sendMessage('test', 'test', 'This should fail');
+  } catch (error) {
+    console.log(`  ✅ Correctly blocked unauthorized access: ${error.message}`);
+  }
+}
+
+// Run the examples
+if (require.main === module) {
+  runExample()
+    .then(() => demonstrateUsagePatterns())
+    .catch(console.error);
+}
+
+module.exports = { runExample, demonstrateUsagePatterns };

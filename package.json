@@ -1,0 +1,47 @@
+{
+  "name": "ecokind-moderation-sdk",
+  "version": "1.1.1",
+  "description": "EcoKind - A privacy-first moderation SDK powered by decentralized LLMs on the Internet Computer. Making the internet safer, one message at a time.",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js",
+    "example": "node example.js"
+  },
+  "keywords": [
+    "ecokind",
+    "content-moderation",
+    "llm",
+    "internet-computer",
+    "icp",
+    "dfinity",
+    "privacy",
+    "toxicity-detection",
+    "decentralized",
+    "chat-safety",
+    "npm-sdk",
+    "real-time",
+    "developer-tools",
+    "moderation"
+  ],
+  "author": "Abhin S Krishna",
+  "license": "MIT",
+  "dependencies": {
+    "@dfinity/agent": "^1.0.1",
+    "@dfinity/principal": "^1.0.1",
+    "@dfinity/candid": "^1.0.1"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/abhin2003/EchoKind"
+  },
+  "bugs": {
+    "url": "https://github.com/abhin2003/EchoKind/issues"
+  },
+  "homepage": "https://github.com/abhin2003/EchoKind",
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
